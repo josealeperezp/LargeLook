@@ -22,6 +22,23 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-neo4j</artifactId>
+            <version>4.1.2.RELEASE</version>
+        </dependency>
+
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.neo4j</groupId>
+            <artifactId>neo4j-jdbc</artifactId>
+            <version>2.3.2</version>
+        </dependency>
+       
+        <dependency>
             <groupId>javax</groupId>
             <artifactId>javaee-web-api</artifactId>
             <version>6.0</version>
@@ -102,6 +119,10 @@
             <id>spring-releases</id>
             <url>https://repo.spring.io/libs-release</url>
         </repository>
+        <repository> 
+            <id>neo4j-public</id> 
+            <url>http://m2.neo4j.org/content/groups/public</url> 
+	</repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
