@@ -1,0 +1,8 @@
+---
+- name: Download tomcat 8
+  get_url: url=http://www-us.apache.org/dist/tomcat/tomcat-8/v8.0.36/bin/apache-tomcat-8.0.36.tar.gz dest={{base_dir}}
+
+- name: Uncompress tomcat 8
+  command: tar -xvzf {{base_dir}}/apache-tomcat-8.0.36.tar.gz
+
+
