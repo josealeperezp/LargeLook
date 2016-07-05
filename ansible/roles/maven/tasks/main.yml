@@ -1,0 +1,4 @@
+---
+- name: install Maven
+  sudo: yes
+  apt: name=maven state=latest force=yes update-cache=yes

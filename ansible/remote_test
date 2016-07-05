@@ -1,0 +1,2 @@
+[api]
+192.168.0.109 ansible_ssh_user=ubuntu aws=false

@@ -5,4 +5,11 @@
 - name: Uncompress tomcat 8
   command: tar -xvzf {{base_dir}}/apache-tomcat-8.0.36.tar.gz
 
+- name: Set user tomcat config file
+  template: src=tomcat-users.xml dest={{base_dir}}/apache-tomcat-8.0.36/conf/
+  
+- name: Start tomcat
+  shell: CATALINA_HOME=/home/ubuntu/apache-tomcat-{{tomcat_version}} CATALINA_BASE=/home/ubuntu/apache-tomcat-{{tomcat_version}} JRE_HOME=/usr CLASSPATH=/home/ubuntu/apache-tomcat-{{tomcat_version}}/bin/bootstrap.jar:/home/ubuntu/apache-tomcat-{{tomcat_version}}/bin/tomcat-juli.jar /home/ubuntu/apache-tomcat-{{tomcat_version}}/bin/startup.sh
 
+- name: Wait for it
+  pause: seconds=5

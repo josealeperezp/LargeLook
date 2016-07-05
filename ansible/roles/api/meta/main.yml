@@ -1,3 +1,5 @@
 ---
 dependencies:
    - role: tomcat
+   - role: java
+   - role: maven

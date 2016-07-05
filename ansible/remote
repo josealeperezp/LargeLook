@@ -1,2 +1,2 @@
 [api]
-0.0.0.0 ansible_ssh_user=ubuntu aws=false
+52.39.224.145 ansible_ssh_user=ubuntu aws=false

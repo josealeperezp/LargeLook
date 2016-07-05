@@ -1,4 +1,6 @@
 ---
-- name: restart tomcat
-  sudo: yes
-  service: name=tomcat7 state=restarted
+- name: Stop tomcat
+  shell: "{{base_dir}}/apache-tomcat-8.0.36/bin/shutdown.sh"
+
+- name: Start tomcat
+  shell: "{{base_dir}}/apache-tomcat-8.0.36/bin/startup.sh"
