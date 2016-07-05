@@ -15,6 +15,8 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 
@@ -26,7 +28,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @Configuration
 @ComponentScan
 @EnableAutoConfiguration
-public class Application {
+public class Application extends SpringBootServletInitializer {
+    
+    @Override
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(Application.class);
+    }
 
     public static void main(String[] args) {
         System.out.println("En el main");
