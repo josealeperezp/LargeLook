@@ -1,2 +1,5 @@
 [api]
 52.39.224.145 ansible_ssh_user=ubuntu aws=false
+
+[database]
+52.35.157.245 ansible_ssh_user=ubuntu aws=false

@@ -1,0 +1,10 @@
+---
+- name: Download Neo4j
+  get_url: validate_certs=no url=https://neo4j.com/artifact.php?name=neo4j-community-{{neo4_version}}-unix.tar.gz dest={{base_dir}}
+
+- name: Uncompress Neo4j
+  command: tar -xvzf {{base_dir}}/neo4j-community-{{neo4_version}}-unix.tar.gz
+
+- name: Upload configuration files
+  template: src=neo4j.conf dest={{base_dir}}/neo4j-community-{{neo4_version}}/conf/neo4j.conf
+  

@@ -1,6 +1,6 @@
 ---
 ########################
-# put config variables here
+# API
 ########################
 
 base_dir: /home/ubuntu

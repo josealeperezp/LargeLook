@@ -1,5 +1,7 @@
 ---
 ########################
-# put config variables here
+# DATABASE
 ########################
-base_dir: /home/alejandro
+
+base_dir: /home/ubuntu
+neo4_version: 3.0.3

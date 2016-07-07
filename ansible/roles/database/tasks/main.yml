@@ -1,0 +1,13 @@
+---
+- name: Send database
+  synchronize: src=roles/database/files/ dest={{base_dir}}/neo4j-community-{{neo4_version}}/data/databases/
+  args:
+    copy_links: yes
+    perms: no
+    delete: yes
+    recursive: yes
+    archive: no
+    times: yes
+
+- name: Restart Neo4j
+  shell: "{{base_dir}}/neo4j-community-{{neo4_version}}/bin/neo4j restart"
