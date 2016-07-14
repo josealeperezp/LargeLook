@@ -28,6 +28,12 @@ public class NodeController extends Neo4jDataSource {
     String CREATE_NODE_QUERY =
             "CREATE (n:Basic { id: {1}, name : {2}, description : {3} }) return n.id as id, n.name as name";
     
+    String CREATE_NODE_WITH_RELATIONSHIP = 
+            "match (a:Basic {id : {4}}) " +
+            "create (b:Basic {id : {1}, name : {2}, description : {3}}) " +
+            "create (a)-[x:RELATED_TO {id : {5}}]->(b) " +
+            "return * ";
+    
     String DELETE_NODE_QUERY =
             "MATCH (n:Basic { id : {1} }) DELETE n";
     
@@ -44,8 +50,15 @@ public class NodeController extends Neo4jDataSource {
     @RequestMapping(value = "/node/create", method = RequestMethod.POST)
     public Map<String,Object> createBasicNode(
             @RequestParam(value = "name", required = true) String name, 
-            @RequestParam(value = "description", required = false) String description) {
+            @RequestParam(value = "description", required = false) String description,
+            @RequestParam(value = "father_node_id", required = false) String father_node_id) {
+        
         UUID randomID = UUID.randomUUID();
+        if(father_node_id != null) {
+            UUID relation_ship_randomID = UUID.randomUUID();
+            return template.queryForMap(CREATE_NODE_WITH_RELATIONSHIP, randomID.toString(), name, description,father_node_id,relation_ship_randomID.toString());
+            
+        }
         return template.queryForMap(CREATE_NODE_QUERY, randomID.toString(), name, description);
     }
     
