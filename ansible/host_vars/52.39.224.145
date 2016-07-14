@@ -6,3 +6,4 @@
 base_dir: /home/ubuntu
 largelook_api_dir: "{{base_dir}}/www/LargeLook"
 tomcat_version: 8.0.36 
+neo4j_host: 172.31.39.23

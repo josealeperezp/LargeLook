@@ -7,7 +7,25 @@
 
 - name: Set user tomcat config file
   template: src=tomcat-users.xml dest={{base_dir}}/apache-tomcat-8.0.36/conf/
-  
+
+- name: Fix catalina.sh
+  template: src=catalina.sh dest={{base_dir}}/apache-tomcat-8.0.36/bin/
+
+- name: Create Neo4j JDBC required folders
+  file: path={{item}} state=directory
+  with_items:
+    - "{{base_dir}}/neo4j_jdbc"
+
+- name: Fix Neo4j JDBC library
+  synchronize: src=roles/tomcat/files/ dest={{base_dir}}/neo4j_jdbc/
+  args:
+    copy_links: yes
+    perms: no
+    delete: yes
+    recursive: yes
+    archive: no
+    times: yes
+
 - name: Start tomcat
   shell: CATALINA_HOME=/home/ubuntu/apache-tomcat-{{tomcat_version}} CATALINA_BASE=/home/ubuntu/apache-tomcat-{{tomcat_version}} JRE_HOME=/usr CLASSPATH=/home/ubuntu/apache-tomcat-{{tomcat_version}}/bin/bootstrap.jar:/home/ubuntu/apache-tomcat-{{tomcat_version}}/bin/tomcat-juli.jar /home/ubuntu/apache-tomcat-{{tomcat_version}}/bin/startup.sh
 

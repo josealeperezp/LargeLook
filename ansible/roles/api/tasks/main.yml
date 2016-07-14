@@ -20,3 +20,6 @@
 - name: Build API project
   shell: chdir="{{base_dir}}/www/LargeLook/" mvn clean install
 
+- name: Configure API
+  template: src=llapi.properties dest={{base_dir}}/www/LargeLook/src/main/resources/
+
