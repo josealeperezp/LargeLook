@@ -1,0 +1,62 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.llcore.controllers;
+
+import com.llcore.Neo4jDataSource;
+import java.util.Map;
+import java.util.UUID;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+/**
+ *
+ * @author alejandro
+ */
+@RestController
+public class RelationshipController extends Neo4jDataSource {
+    @Autowired
+    JdbcTemplate template;
+    
+    String CREATE_RELATIONSHIP =
+            "match (a:Basic {id : {1}}) " +
+            "match (b:Basic {id : {2}}) " +
+            "create (a)-[x:RELATED_TO]->(b) " +
+            "return x";
+    
+    String DELETE_RELATIONSHIP =
+            "match (a:Basic {id : {1}})-[x:RELATED_TO]->(b:Basic {id : {2}}) " +
+            "delete x";
+    
+    /**
+     * Create a new relationship
+     * @param start_node_id
+     * @param end_node_id
+     * @return 
+     */
+    @RequestMapping(value = "/relationship/create", method = RequestMethod.POST)
+    public Map<String,Object> createRelationship(
+            @RequestParam(value = "start_node_id", required = true) String start_node_id, 
+            @RequestParam(value = "end_node_id", required = true) String end_node_id) {
+        return template.queryForMap(CREATE_RELATIONSHIP, start_node_id, end_node_id);
+    }
+    
+    /**
+     * Delete a relationship
+     * @param start_node_id
+     * @param end_node_id
+     * @return 
+     */
+    @RequestMapping(value = "/relationship/delete", method = RequestMethod.POST)
+    public int deleteRelationship(
+            @RequestParam(value = "start_node_id", required = true) String start_node_id, 
+            @RequestParam(value = "end_node_id", required = true) String end_node_id) {
+        return template.update(DELETE_RELATIONSHIP, start_node_id, end_node_id);
+    }
+}
