@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import com.llcore.utils.CypherQuery;
 
 /**
  *
@@ -23,21 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class RelationshipController extends Neo4jDataSource {
     @Autowired
     JdbcTemplate template;
-    
-    String CREATE_RELATIONSHIP =
-            "match (a:Basic {id : {1}}) " +
-            "match (b:Basic {id : {2}}) " +
-            "create (a)-[x:RELATED_TO {id: {3}}]->(b) " +
-            "return *";
-    
-    String DELETE_RELATIONSHIP =
-            "match (a:Basic {id : {1}})-[x:RELATED_TO]->(b:Basic {id : {2}}) " +
-            "delete x";
-    
-    String DELETE_RELATIONSHIP_BY_ID =
-            "match (a:Basic {id : {1}})-[x:RELATED_TO {id : {2}}]->(b:Basic {id : {3}}) " +
-            "delete x";
-    
+       
     /**
      * Create a new relationship
      * @param start_node_id
@@ -49,7 +36,7 @@ public class RelationshipController extends Neo4jDataSource {
             @RequestParam(value = "start_node_id", required = true) String start_node_id, 
             @RequestParam(value = "end_node_id", required = true) String end_node_id) {
         UUID randomID = UUID.randomUUID();
-        return template.queryForMap(CREATE_RELATIONSHIP, start_node_id, end_node_id,randomID.toString());
+        return template.queryForMap(CypherQuery.CREATE_RELATIONSHIP, start_node_id, end_node_id,randomID.toString());
     }
     
     /**
@@ -65,7 +52,7 @@ public class RelationshipController extends Neo4jDataSource {
             @RequestParam(value = "end_node_id", required = true) String end_node_id,
             @RequestParam(value = "relationship_id", required = false) String relationship_id) {
         if(relationship_id != null)
-            return template.update(DELETE_RELATIONSHIP_BY_ID, start_node_id, relationship_id, end_node_id);
-        return template.update(DELETE_RELATIONSHIP, start_node_id, end_node_id);
+            return template.update(CypherQuery.DELETE_RELATIONSHIP_BY_ID, start_node_id, relationship_id, end_node_id);
+        return template.update(CypherQuery.DELETE_RELATIONSHIP, start_node_id, end_node_id);
     }
 }

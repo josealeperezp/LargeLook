@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 import org.springframework.web.bind.annotation.RequestMethod;
+import com.llcore.utils.CypherQuery;
 
 /**
  *
@@ -25,41 +26,40 @@ public class NodeController extends Neo4jDataSource {
     @Autowired
     JdbcTemplate template;
     
-    String CREATE_NODE_QUERY =
-            "CREATE (n:Basic { id: {1}, name : {2}, description : {3} }) return n.id as id, n.name as name";
-    
-    String CREATE_NODE_WITH_RELATIONSHIP = 
-            "match (a:Basic {id : {4}}) " +
-            "create (b:Basic {id : {1}, name : {2}, description : {3}}) " +
-            "create (a)-[x:RELATED_TO {id : {5}}]->(b) " +
-            "return * ";
-    
-    String DELETE_NODE_QUERY =
-            "MATCH (n:Basic { id : {1} }) DELETE n";
-    
-    String GET_NODE_QUERY =
-            "MATCH (n:Basic { id : {1} }) RETURN n.id as id, n.name as name, n.description as description";
-       
-    
     /**
      * Create a new node
      * @param name
      * @param description
+     * @param father_node_id
+     * @param child_node_id
      * @return 
      */
     @RequestMapping(value = "/node/create", method = RequestMethod.POST)
     public Map<String,Object> createBasicNode(
             @RequestParam(value = "name", required = true) String name, 
             @RequestParam(value = "description", required = false) String description,
-            @RequestParam(value = "father_node_id", required = false) String father_node_id) {
+            @RequestParam(value = "father_node_id", required = false) String father_node_id,
+            @RequestParam(value = "child_node_id", required = false) String child_node_id) {
         
+        Map<String,Object> result;
         UUID randomID = UUID.randomUUID();
+        result = template.queryForMap(CypherQuery.CREATE_NODE_QUERY, randomID.toString(), name, description);
+        
         if(father_node_id != null) {
-            UUID relation_ship_randomID = UUID.randomUUID();
-            return template.queryForMap(CREATE_NODE_WITH_RELATIONSHIP, randomID.toString(), name, description,father_node_id,relation_ship_randomID.toString());
-            
+            UUID randomID_relationship = UUID.randomUUID();
+            result = template.queryForMap(CypherQuery.CREATE_RELATIONSHIP, father_node_id, randomID.toString(),randomID_relationship.toString());
         }
-        return template.queryForMap(CREATE_NODE_QUERY, randomID.toString(), name, description);
+        
+        if(child_node_id != null) {
+            UUID randomID_relationship = UUID.randomUUID();
+            result = template.queryForMap(CypherQuery.CREATE_RELATIONSHIP, randomID.toString(), child_node_id,randomID_relationship.toString());
+        }
+        /*if(father_node_id != null) {
+            UUID relation_ship_randomID = UUID.randomUUID();
+            return template.queryForMap(CypherQuery.CREATE_NODE_WITH_RELATIONSHIP, randomID.toString(), name, description,father_node_id,relation_ship_randomID.toString());
+            
+        }*/
+        return result;
     }
     
     /**
@@ -70,7 +70,7 @@ public class NodeController extends Neo4jDataSource {
     @RequestMapping(value = "/node/delete", method = RequestMethod.POST)
     public int deleteBasicNode(
             @RequestParam(value = "id", required = true) String id) {
-        int result = template.update(DELETE_NODE_QUERY, id);
+        int result = template.update(CypherQuery.DELETE_NODE_QUERY, id);
         return result;
     }
     
@@ -82,7 +82,7 @@ public class NodeController extends Neo4jDataSource {
     @RequestMapping(value = "/node/get", method = RequestMethod.GET)
     public Map<String,Object> getBasicNode(
             @RequestParam(value = "id", required = true) String id) {
-        return template.queryForMap(GET_NODE_QUERY, id);
+        return template.queryForMap(CypherQuery.GET_NODE_QUERY, id);
     }
     
     
