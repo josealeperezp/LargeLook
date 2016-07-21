@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.llcore.utils.CypherQuery;
+import com.llcore.libs.CypherQuery;
 
 /**
  *
@@ -24,6 +24,8 @@ import com.llcore.utils.CypherQuery;
 public class RelationshipController extends Neo4jDataSource {
     @Autowired
     JdbcTemplate template;
+    
+    //TODO: crete model for this controller
        
     /**
      * Create a new relationship

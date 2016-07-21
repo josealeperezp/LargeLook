@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 import org.springframework.web.bind.annotation.RequestMethod;
-import com.llcore.utils.CypherQuery;
+import com.llcore.libs.CypherQuery;
 
 /**
  *
@@ -25,6 +25,8 @@ import com.llcore.utils.CypherQuery;
 public class NodeController extends Neo4jDataSource {
     @Autowired
     JdbcTemplate template;
+    
+    //TODO: crete model for this controller
     
     /**
      * Create a new node
@@ -54,11 +56,7 @@ public class NodeController extends Neo4jDataSource {
             UUID randomID_relationship = UUID.randomUUID();
             result = template.queryForMap(CypherQuery.CREATE_RELATIONSHIP, randomID.toString(), child_node_id,randomID_relationship.toString());
         }
-        /*if(father_node_id != null) {
-            UUID relation_ship_randomID = UUID.randomUUID();
-            return template.queryForMap(CypherQuery.CREATE_NODE_WITH_RELATIONSHIP, randomID.toString(), name, description,father_node_id,relation_ship_randomID.toString());
-            
-        }*/
+        
         return result;
     }
     
