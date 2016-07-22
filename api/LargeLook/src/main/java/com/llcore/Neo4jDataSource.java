@@ -21,7 +21,7 @@ import com.llcore.utils.LlProperty;
  * @author alejandro
  * THIS CLASS IS JUST FOR TESTING THE CONNECTION WITH NEO4J
  */
-@RestController
+//@RestController
 public class Neo4jDataSource {
     
     public LlProperty prop;
@@ -45,5 +45,8 @@ public class Neo4jDataSource {
     public DataSource dataSource() {
         return new DriverManagerDataSource(NEO4J_URL,"neo4j","neo4j");
     }
+    
+    @Autowired
+    public JdbcTemplate template;
 
 }

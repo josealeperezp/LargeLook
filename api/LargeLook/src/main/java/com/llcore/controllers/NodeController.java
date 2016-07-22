@@ -17,14 +17,15 @@ import java.util.UUID;
 import org.springframework.web.bind.annotation.RequestMethod;
 import com.llcore.libs.CypherQuery;
 
+import com.llcore.models.Node;
+
 /**
  *
  * @author alejandro
  */
 @RestController
 public class NodeController extends Neo4jDataSource {
-    @Autowired
-    JdbcTemplate template;
+    
     
     //TODO: crete model for this controller
     
@@ -45,7 +46,9 @@ public class NodeController extends Neo4jDataSource {
         
         Map<String,Object> result;
         UUID randomID = UUID.randomUUID();
-        result = template.queryForMap(CypherQuery.CREATE_NODE_QUERY, randomID.toString(), name, description);
+        //result = template.queryForMap(CypherQuery.CREATE_NODE_QUERY, randomID.toString(), name, description);
+        Node node = new Node();
+        result =node.createNode(randomID.toString(), name, description);
         
         if(father_node_id != null) {
             UUID randomID_relationship = UUID.randomUUID();
