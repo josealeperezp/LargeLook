@@ -8,13 +8,15 @@ package com.llcore.controllers;
 import com.llcore.Neo4jDataSource;
 import java.util.Map;
 import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.llcore.libs.CypherQuery;
+import com.llcore.libs.ResponseHandler;
+import org.springframework.http.ResponseEntity;
+import com.llcore.models.Relationship;
+import java.util.List;
+import com.llcore.exceptions.InvalidParamsException;
 
 /**
  *
@@ -22,10 +24,6 @@ import com.llcore.libs.CypherQuery;
  */
 @RestController
 public class RelationshipController extends Neo4jDataSource {
-    @Autowired
-    JdbcTemplate template;
-    
-    //TODO: crete model for this controller
        
     /**
      * Create a new relationship
@@ -34,11 +32,14 @@ public class RelationshipController extends Neo4jDataSource {
      * @return 
      */
     @RequestMapping(value = "/relationship/create", method = RequestMethod.POST)
-    public Map<String,Object> createRelationship(   
-            @RequestParam(value = "start_node_id", required = true) String start_node_id, 
-            @RequestParam(value = "end_node_id", required = true) String end_node_id) {
-        UUID randomID = UUID.randomUUID();
-        return template.queryForMap(CypherQuery.CREATE_RELATIONSHIP, start_node_id, end_node_id,randomID.toString());
+    public ResponseEntity<?> createRelationship(   
+            @RequestParam(value = "start_node_id", required = true) UUID start_node_id, 
+            @RequestParam(value = "end_node_id", required = true) UUID end_node_id) throws Exception {
+       
+        Relationship rel = new Relationship(template);
+        rel.setSourceId(start_node_id);
+        rel.setTargetId(end_node_id);
+        return ResponseHandler.ok(rel.save());
     }
     
     /**
@@ -48,13 +49,50 @@ public class RelationshipController extends Neo4jDataSource {
      * @param relationship_id
      * @return 
      */
-    @RequestMapping(value = "/relationship/delete", method = RequestMethod.POST)
-    public int deleteRelationship(
-            @RequestParam(value = "start_node_id", required = true) String start_node_id, 
-            @RequestParam(value = "end_node_id", required = true) String end_node_id,
-            @RequestParam(value = "relationship_id", required = false) String relationship_id) {
+    @RequestMapping(value = "/relationship/delete", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteRelationship(
+            @RequestParam(value = "start_node_id", required = false) UUID start_node_id, 
+            @RequestParam(value = "end_node_id", required = false) UUID end_node_id,
+            @RequestParam(value = "relationship_id", required = false) UUID relationship_id) throws Exception {
+        
+        Relationship rel;
+        
         if(relationship_id != null)
-            return template.update(CypherQuery.DELETE_RELATIONSHIP_BY_ID, start_node_id, relationship_id, end_node_id);
-        return template.update(CypherQuery.DELETE_RELATIONSHIP, start_node_id, end_node_id);
+            rel = new Relationship(template,relationship_id);
+        else if(start_node_id != null && end_node_id != null)
+            rel = new Relationship(template,start_node_id,end_node_id);
+        else
+            throw new InvalidParamsException("Bad arguments. You need to specified relationship_id or start_node_id and end_node_id");
+        
+        boolean rels = rel.delete();
+        return ResponseHandler.ok(rels);
+        
+    }
+    
+    /**
+     * Returns relationships between two nodes. Or returns the information about the give relationship ID
+     * @param start_node_id
+     * @param end_node_id
+     * @param relationship_id
+     * @return
+     * @throws Exception 
+     */
+    @RequestMapping(value = "/relationship/get", method = RequestMethod.GET)
+    public ResponseEntity<?> getRelationship(
+            @RequestParam(value = "start_node_id", required = false) UUID start_node_id, 
+            @RequestParam(value = "end_node_id", required = false) UUID end_node_id,
+            @RequestParam(value = "relationship_id", required = false) UUID relationship_id) throws Exception {
+        
+        Relationship rel = new Relationship(template);
+
+        if(relationship_id != null) {
+            Map<String,Object> rels = rel.findOneById(relationship_id);
+            return ResponseHandler.ok(rels);
+        } else if(start_node_id != null && end_node_id != null){
+            List<Map<String,Object>> rels = rel.findAllByNodes(start_node_id, end_node_id);
+            return ResponseHandler.ok(rels);
+        } else {
+            throw new InvalidParamsException("Bad arguments. You need to specified relationship_id or start_node_id and end_node_id");
+        }
     }
 }

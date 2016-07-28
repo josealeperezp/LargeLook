@@ -24,9 +24,9 @@ import org.apache.commons.codec.binary.Base64;
  * @author alejandro
  */
 @RestController
-public class ProjectController extends Neo4jDataSource {
-    @Autowired
-    JdbcTemplate template;
+public class ProjectController {//extends Neo4jDataSource {
+    //@Autowired
+    //JdbcTemplate template;
     
     //TODO: crete model for this controller
     //TODO: use oauth2 for user creation
@@ -45,7 +45,7 @@ public class ProjectController extends Neo4jDataSource {
         Map<String,Object> result;
         UUID randomID = UUID.randomUUID();
         UUID relationship_randomID = UUID.randomUUID();
-        result = template.queryForMap(CypherQuery.CREATE_PROJECT, randomID.toString(), name, user_id,relationship_randomID.toString());
+        result = null;//template.queryForMap(CypherQuery.CREATE_PROJECT, randomID.toString(), name, user_id,relationship_randomID.toString());
         return ResponseHandler.ok(result);
     }
             

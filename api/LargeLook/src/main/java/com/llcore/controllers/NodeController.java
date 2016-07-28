@@ -7,17 +7,15 @@ package com.llcore.controllers;
 
 import com.llcore.Neo4jDataSource;
 import java.util.Map;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 import org.springframework.web.bind.annotation.RequestMethod;
-import com.llcore.libs.CypherQuery;
-
+import com.llcore.libs.ResponseHandler;
 import com.llcore.models.Node;
+import com.llcore.models.Relationship;
+import org.springframework.http.ResponseEntity;
 
 /**
  *
@@ -25,9 +23,6 @@ import com.llcore.models.Node;
  */
 @RestController
 public class NodeController extends Neo4jDataSource {
-    
-    
-    //TODO: crete model for this controller
     
     /**
      * Create a new node
@@ -38,29 +33,35 @@ public class NodeController extends Neo4jDataSource {
      * @return 
      */
     @RequestMapping(value = "/node/create", method = RequestMethod.POST)
-    public Map<String,Object> createBasicNode(
+    public ResponseEntity<?> createBasicNode(
             @RequestParam(value = "name", required = true) String name, 
             @RequestParam(value = "description", required = false) String description,
-            @RequestParam(value = "father_node_id", required = false) String father_node_id,
-            @RequestParam(value = "child_node_id", required = false) String child_node_id) {
+            @RequestParam(value = "father_node_id", required = false) UUID father_node_id,
+            @RequestParam(value = "child_node_id", required = false) UUID child_node_id) throws Exception {
         
         Map<String,Object> result;
-        UUID randomID = UUID.randomUUID();
-        //result = template.queryForMap(CypherQuery.CREATE_NODE_QUERY, randomID.toString(), name, description);
-        Node node = new Node();
-        result =node.createNode(randomID.toString(), name, description);
+        Node node = new Node(template);
+        node.setName(name);
+        node.setDescription(description);
+        result = node.save();
         
         if(father_node_id != null) {
-            UUID randomID_relationship = UUID.randomUUID();
-            result = template.queryForMap(CypherQuery.CREATE_RELATIONSHIP, father_node_id, randomID.toString(),randomID_relationship.toString());
+            Relationship relationship = new Relationship(template);
+            relationship.setSourceId(father_node_id);
+            relationship.setTargetId(node.getId());
+            result = relationship.save();
+            return ResponseHandler.ok(result);
         }
         
         if(child_node_id != null) {
-            UUID randomID_relationship = UUID.randomUUID();
-            result = template.queryForMap(CypherQuery.CREATE_RELATIONSHIP, randomID.toString(), child_node_id,randomID_relationship.toString());
+            Relationship relationship = new Relationship(template);
+            relationship.setSourceId(node.getId());
+            relationship.setTargetId(child_node_id);
+            result = relationship.save();
+            return ResponseHandler.ok(result);
         }
         
-        return result;
+        return ResponseHandler.ok(result);
     }
     
     /**
@@ -69,10 +70,12 @@ public class NodeController extends Neo4jDataSource {
      * @return 
      */
     @RequestMapping(value = "/node/delete", method = RequestMethod.POST)
-    public int deleteBasicNode(
-            @RequestParam(value = "id", required = true) String id) {
-        int result = template.update(CypherQuery.DELETE_NODE_QUERY, id);
-        return result;
+    public ResponseEntity<?> deleteBasicNode(
+            @RequestParam(value = "id", required = true) UUID id) throws Exception {
+        
+        Node node = new Node(template,id);
+        node.delete();
+        return ResponseHandler.ok("done");
     }
     
     /**
@@ -81,9 +84,10 @@ public class NodeController extends Neo4jDataSource {
      * @return 
      */
     @RequestMapping(value = "/node/get", method = RequestMethod.GET)
-    public Map<String,Object> getBasicNode(
-            @RequestParam(value = "id", required = true) String id) {
-        return template.queryForMap(CypherQuery.GET_NODE_QUERY, id);
+    public ResponseEntity<?> getBasicNode(
+            @RequestParam(value = "id", required = true) UUID id) throws Exception {
+        Node node = new Node(template,id);
+        return ResponseHandler.ok(node.getAllInfo());
     }
     
     

@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.apache.commons.codec.binary.Base64;
+import com.llcore.models.User;
 
 /**
  *
@@ -25,12 +26,8 @@ import org.apache.commons.codec.binary.Base64;
  */
 @RestController
 public class UserController extends Neo4jDataSource {
-    @Autowired
-    JdbcTemplate template;
-    
     //TODO: crete model for this controller
     //TODO: use oauth2 for user creation
-    //TODO: create exception library
     
     /**
      * Create a simple node user
@@ -45,12 +42,14 @@ public class UserController extends Neo4jDataSource {
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "lastname", required = false) String lastname,
             @RequestParam(value = "email", required = true) String email,
-            @RequestParam(value = "password", required = true) String password) {
-        Map<String,Object> result;
-        UUID randomID = UUID.randomUUID();
-        byte[] encodedBytes = Base64.encodeBase64(password.getBytes());
-        result = template.queryForMap(CypherQuery.CREATE_USER, randomID.toString(), name, lastname, email,new String(encodedBytes));
-        return ResponseHandler.ok(result);
+            @RequestParam(value = "password", required = true) String password) throws Exception {
+        
+        User user = new User(template);
+        user.setEmil(email);
+        user.setPassword(password);
+        user.setName(name);
+        user.setLastname(lastname);
+        return ResponseHandler.ok(user.save());
     }
             
     /**
@@ -61,19 +60,12 @@ public class UserController extends Neo4jDataSource {
      */
     @RequestMapping(value = "/user/delete", method = RequestMethod.POST)
     public ResponseEntity<?> deleteUser(
-            @RequestParam(value = "id", required = false) String id,
-            @RequestParam(value = "email", required = false) String email
-        ) {
-        int result;
-        if(id != null) {
-            result = template.update(CypherQuery.DELETE_USR_BY_ID,id);
-            return ResponseHandler.ok(result);
-        } else if(email != null) { 
-            result = template.update(CypherQuery.DELETE_USR_BY_EMAIL,email);
-            return ResponseHandler.ok(result);
-        } else {
-            return ResponseHandler.internal_error("Id or email must be provided");
-        }
+            @RequestParam(value = "email", required = true) String email) throws Exception {
+        
+        User user = new User(template,email);
+        user.delete();
+        return ResponseHandler.ok(true);
+        
     }
     
 }

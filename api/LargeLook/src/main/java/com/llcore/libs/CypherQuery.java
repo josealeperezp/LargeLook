@@ -44,14 +44,24 @@ public class CypherQuery {
     
     public static String DELETE_RELATIONSHIP =
             "match (node1:Basic {id : {1}})-[rel:RELATED_TO]->(node2:Basic {id : {2}}) " +
-            "delete x";
+            "delete rel";
     
     public static String DELETE_RELATIONSHIP_BY_ID =
-            "match (node1:Basic {id : {1}})-[rel:RELATED_TO {id : {2}}]->(node2:Basic {id : {3}}) " +
-            "delete x";
+            "match (node1:Basic)-[rel:RELATED_TO {id : {1}}]->(node2:Basic) " +
+            "delete rel";
+    
+    public static String GET_RELATIONSHIP_BY_ID = 
+            "match (node1:Basic)-[rel:RELATED_TO {id : {1}}]->(node2:Basic) return node1, node2, rel";
+    
+    public static String DELETE_RELATIONSHIP_BY_NODE =
+            "match (node1:Basic {id : {1}})-[rel:RELATED_TO]->(node2:Basic {id : {2}}) " +
+            "return node1, node2, rel";
     
     //CRUD user
     //TODO: delete user must be more intelligent
+    public static String GET_USER =
+            "match (user:User { email : {1} }) return user";
+    
     public static String CREATE_USER =
             "CREATE (user:User {"
             + " id: {1}, "
@@ -61,13 +71,13 @@ public class CypherQuery {
             + " password : {5} "
             + "}) return user.id as id, user.name as name, user.lastname as lastname, user.email as email";
     
-    public static String DELETE_USR_BY_ID =
+    public static String DELETE_USER_BY_ID =
             "MATCH (user:User { id : {1} }) " +
             "OPTIONAL MATCH ()-[r1]->(user) " +
             "OPTIONAL MATCH (user)-[r2]->() " +
             "delete r1,r2,user";
     
-    public static String DELETE_USR_BY_EMAIL =
+    public static String DELETE_USER_BY_EMAIL =
             "MATCH (user:User { email : {1} }) " +
             "OPTIONAL MATCH ()-[r1]->(user) " +
             "OPTIONAL MATCH (user)-[r2]->() " +
