@@ -37,7 +37,8 @@ public class NodeController extends Neo4jDataSource {
             @RequestParam(value = "name", required = true) String name, 
             @RequestParam(value = "description", required = false) String description,
             @RequestParam(value = "father_node_id", required = false) UUID father_node_id,
-            @RequestParam(value = "child_node_id", required = false) UUID child_node_id) throws Exception {
+            @RequestParam(value = "child_node_id", required = false) UUID child_node_id,
+            @RequestParam(value = "rel_label", required = false, defaultValue = "RELATED_TO") String rel_label) throws Exception {
         
         Map<String,Object> result;
         Node node = new Node(template);
@@ -49,7 +50,7 @@ public class NodeController extends Neo4jDataSource {
             Relationship relationship = new Relationship(template);
             relationship.setSourceId(father_node_id);
             relationship.setTargetId(node.getId());
-            result = relationship.save();
+            result = relationship.save(rel_label);
             return ResponseHandler.ok(result);
         }
         
@@ -57,7 +58,7 @@ public class NodeController extends Neo4jDataSource {
             Relationship relationship = new Relationship(template);
             relationship.setSourceId(node.getId());
             relationship.setTargetId(child_node_id);
-            result = relationship.save();
+            result = relationship.save(rel_label);
             return ResponseHandler.ok(result);
         }
         

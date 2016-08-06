@@ -7,17 +7,11 @@ package com.llcore.controllers;
 
 import com.llcore.Neo4jDataSource;
 import com.llcore.libs.ResponseHandler;
-import com.llcore.libs.CypherQuery;
-import java.util.Map;
-import java.util.UUID;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.apache.commons.codec.binary.Base64;
 import com.llcore.models.User;
 
 /**
@@ -45,7 +39,7 @@ public class UserController extends Neo4jDataSource {
             @RequestParam(value = "password", required = true) String password) throws Exception {
         
         User user = new User(template);
-        user.setEmil(email);
+        user.setEmail(email);
         user.setPassword(password);
         user.setName(name);
         user.setLastname(lastname);
@@ -54,18 +48,30 @@ public class UserController extends Neo4jDataSource {
             
     /**
      * Delete an user
-     * @param id
      * @param email
      * @return 
      */
-    @RequestMapping(value = "/user/delete", method = RequestMethod.POST)
+    @RequestMapping(value = "/user/delete", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteUser(
             @RequestParam(value = "email", required = true) String email) throws Exception {
         
         User user = new User(template,email);
         user.delete();
         return ResponseHandler.ok(true);
+    }
+    
+    /**
+     * Get a user
+     * @param email
+     * @return
+     * @throws Exception 
+     */
+    @RequestMapping(value = "/user/get", method = RequestMethod.GET)
+    public ResponseEntity<?> getUser(
+            @RequestParam(value = "email", required = true) String email) throws Exception {
         
+        User user = new User(template);
+        return ResponseHandler.ok(user.findByEmail(email));
     }
     
 }

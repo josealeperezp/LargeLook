@@ -34,12 +34,13 @@ public class RelationshipController extends Neo4jDataSource {
     @RequestMapping(value = "/relationship/create", method = RequestMethod.POST)
     public ResponseEntity<?> createRelationship(   
             @RequestParam(value = "start_node_id", required = true) UUID start_node_id, 
-            @RequestParam(value = "end_node_id", required = true) UUID end_node_id) throws Exception {
+            @RequestParam(value = "end_node_id", required = true) UUID end_node_id,
+            @RequestParam(value = "rel_label", required = false, defaultValue = "RELATED_TO") String rel_label) throws Exception {
        
         Relationship rel = new Relationship(template);
         rel.setSourceId(start_node_id);
         rel.setTargetId(end_node_id);
-        return ResponseHandler.ok(rel.save());
+        return ResponseHandler.ok(rel.save(rel_label));
     }
     
     /**

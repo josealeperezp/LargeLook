@@ -84,12 +84,12 @@ public class Relationship {
      * @return
      * @throws Exception 
      */
-    public Map<String,Object> save() throws Exception {
+    public Map<String,Object> save(String rel_label) throws Exception {
         UUID randomID = UUID.randomUUID();
         if(source_id == null | target_id == null)
             throw new DefaultNeo4jException("source_id or target_id is null");
         
-        return template.queryForMap(CypherQuery.CREATE_RELATIONSHIP, source_id.toString(), target_id.toString(),randomID.toString());
+        return template.queryForMap(CypherQuery.CREATE_RELATIONSHIP(rel_label), source_id.toString(), target_id.toString(),randomID.toString());
     }
     
     public Map<String,Object> findOneById(UUID id) throws Exception {
