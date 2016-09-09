@@ -1,15 +1,15 @@
 ---
 - name: Download tomcat 8
-  get_url: url=http://www-us.apache.org/dist/tomcat/tomcat-8/v8.0.36/bin/apache-tomcat-8.0.36.tar.gz dest={{base_dir}}
+  get_url: url=http://www-us.apache.org/dist/tomcat/tomcat-8/v{{tomcat_version}}/bin/apache-tomcat-{{tomcat_version}}.tar.gz dest={{base_dir}}
 
 - name: Uncompress tomcat 8
-  command: tar -xvzf {{base_dir}}/apache-tomcat-8.0.36.tar.gz
+  command: tar -xvzf {{base_dir}}/apache-tomcat-{{tomcat_version}}.tar.gz
 
 - name: Set user tomcat config file
-  template: src=tomcat-users.xml dest={{base_dir}}/apache-tomcat-8.0.36/conf/
+  template: src=tomcat-users.xml dest={{base_dir}}/apache-tomcat-{{tomcat_version}}/conf/
 
 - name: Fix catalina.sh
-  template: src=catalina.sh dest={{base_dir}}/apache-tomcat-8.0.36/bin/
+  template: src=catalina.sh dest={{base_dir}}/apache-tomcat-{{tomcat_version}}/bin/
 
 - name: Create Neo4j JDBC required folders
   file: path={{item}} state=directory

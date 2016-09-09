@@ -3,6 +3,8 @@
   file: path={{item}} state=directory
   with_items:
     - "{{base_dir}}/www"
+    - "{{base_dir}}/apache-tomcat-{{tomcat_version}}/conf/Catalina/"
+    - "{{base_dir}}/apache-tomcat-{{tomcat_version}}/conf/Catalina/localhost"
 
 - name: Send API's files
   synchronize: src=roles/api/files/ dest={{base_dir}}/www/
@@ -17,9 +19,11 @@
 - name: Configure API in tomcat 8
   template: src=LargeLook.xml dest={{base_dir}}/apache-tomcat-{{tomcat_version}}/conf/Catalina/localhost/LargeLook.xml
 
+- name: Configure API
+  template: src=llapi.properties dest={{base_dir}}/www/LargeLook/src/main/resources/
+  
 - name: Build API project
   shell: chdir="{{base_dir}}/www/LargeLook/" mvn clean install
 
-- name: Configure API
-  template: src=llapi.properties dest={{base_dir}}/www/LargeLook/src/main/resources/
+
 
